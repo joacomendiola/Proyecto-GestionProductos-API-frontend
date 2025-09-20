@@ -1,21 +1,47 @@
+/* Contenedor general */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 30px 20px;
+  font-family: 'Poppins', sans-serif;
 }
 
+/* Título principal */
 .titulo {
   text-align: center;
   color: #5b21b6; /* violeta fuerte */
-  margin-bottom: 40px;
-  font-size: 2.2rem;
+  margin-bottom: 25px;
+  font-size: 2rem;
   font-weight: 600;
 }
 
+/* Menú de navegación */
+.menu {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #5b21b6;
+  font-weight: bold;
+  font-size: 1.2rem;
+  transition: color 0.2s ease;
+}
+
+.menu a:hover {
+  color: #9333ea; /* violeta más intenso */
+}
+
+/* Formulario */
 .formulario {
   display: flex;
   gap: 10px;
   margin-bottom: 25px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .formulario input {
@@ -23,6 +49,7 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   flex: 1;
+  min-width: 180px;
 }
 
 .formulario button {
@@ -39,12 +66,14 @@
   background-color: #7c3aed;
 }
 
+/* Grid de tarjetas */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 30px;
+  gap: 25px;
 }
 
+/* Tarjeta */
 .card {
   background: white;
   border-radius: 16px;
@@ -60,6 +89,7 @@
   box-shadow: 0px 14px 28px rgba(0, 0, 0, 0.15);
 }
 
+/* Imagen producto */
 .imagen-producto {
   width: 100%;
   height: 180px;
@@ -68,6 +98,7 @@
   margin-bottom: 10px;
 }
 
+/* Placeholder si no hay imagen */
 .imagen-placeholder {
   width: 100%;
   height: 180px;
@@ -76,6 +107,7 @@
   margin-bottom: 10px;
 }
 
+/* Nombre y precio */
 .nombre {
   font-size: 1.2rem;
   font-weight: 500;
@@ -83,12 +115,13 @@
 }
 
 .precio {
-  font-size: 1.4rem;
-  color: #9333ea; /* violeta intenso */
+  font-size: 1.1rem;
+  color: #9333ea;
   font-weight: bold;
   margin-bottom: 12px;
 }
 
+/* Acciones (botones de editar y eliminar) */
 .acciones {
   margin-top: 10px;
   display: flex;
@@ -122,6 +155,7 @@ button.eliminar:hover {
   background-color: #b91c1c;
 }
 
+/* Numeración de tarjetas */
 .numero {
   position: absolute;
   top: 8px;
@@ -130,6 +164,7 @@ button.eliminar:hover {
   color: #5b21b6;
 }
 
+/* Errores */
 .error {
   color: red;
   text-align: center;
