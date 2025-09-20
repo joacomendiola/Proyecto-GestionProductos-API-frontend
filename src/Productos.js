@@ -180,9 +180,24 @@ function Productos() {
         ${p.precio}
       </Typography>
     </CardContent>
-    <CardActions sx={{ justifyContent: "center" }}>
-      {/* botones editar / eliminar */}
-    </CardActions>
+    <CardActions sx={{ justifyContent: "center", gap: 1, paddingBottom: 1 }}>
+  <Button
+    variant="text"
+    color="primary"
+    startIcon={<EditIcon />}
+    onClick={() => handleEdit(p)}
+  >
+    Editar
+  </Button>
+  <Button
+    variant="text"
+    color="error"
+    startIcon={<DeleteIcon />}
+    onClick={() => handleDelete(p.id)}
+  >
+    Eliminar
+  </Button>
+</CardActions>
   </Card>
 ))}
       </div>
