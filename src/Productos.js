@@ -1,206 +1,201 @@
 import React, { useEffect, useState } from "react";
 import {
-  TextField,
-  Button,
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  CircularProgress,
-  Snackbar,
-  Alert
+  Box, Grid, TextField, Button, Card, CardContent, CardActions, CardMedia,
+  Typography, CircularProgress, Snackbar, Alert, Chip, Dialog, DialogTitle,
+  DialogContent, DialogActions, InputAdornment, Fade
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import SaveIcon from "@mui/icons-material/Save";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 
-function Productos() {
-  const API_URL = "https://proyecto-gestionproductos-api.onrender.com/productos";
+const API_URL = "https://proyecto-gestionproductos-api.onrender.com/productos";
 
+export default function Productos() {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", type: "success" });
+  const [error, setError] = useState(null);
 
-  const [form, setForm] = useState({
-    id: null,
-    nombre: "",
-    precio: "",
-    imagenUrl: ""
-  });
+  // Formulario de ALTA
+  const [form, setForm] = useState({ nombre: "", precio: "", imagenUrl: "" });
 
-  useEffect(() => {
-    fetchProductos();
-  }, []);
+  // Modal de EDICIÓN
+  const [editOpen, setEditOpen] = useState(false);
+  const [edit, setEdit] = useState({ id: null, nombre: "", precio: "", imagenUrl: "" });
+
+  // Dialog de BORRADO
+  const [delOpen, setDelOpen] = useState(false);
+  const [delId, setDelId] = useState(null);
+
+  useEffect(() => { fetchProductos(); }, []);
 
   const fetchProductos = () => {
     setLoading(true);
     fetch(API_URL)
-      .then((res) => res.json())
-      .then((data) => {
-        setProductos(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Error cargando productos");
-        setLoading(false);
-      });
+      .then(res => res.json())
+      .then(data => { setProductos(data); setLoading(false); })
+      .catch(() => { setError("Error cargando productos"); setLoading(false); });
   };
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
+  const handleCreate = (e) => {
     e.preventDefault();
-    const metodo = form.id ? "PUT" : "POST";
-    const url = form.id ? `${API_URL}/${form.id}` : API_URL;
-
-    fetch(url, {
-      method: metodo,
+    fetch(API_URL, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        nombre: form.nombre,
-        precio: form.precio,
-        imagenUrl: form.imagenUrl
-      })
+      body: JSON.stringify(form)
     })
-      .then((res) => res.json())
+      .then(res => res.json())
       .then(() => {
+        setForm({ nombre: "", precio: "", imagenUrl: "" });
         fetchProductos();
-        setForm({ id: null, nombre: "", precio: "", imagenUrl: "" });
-        setSnackbar({
-          open: true,
-          message: form.id ? "Producto actualizado ✅" : "Producto agregado ✅",
-          type: "success"
-        });
+        setSnackbar({ open: true, message: "Producto agregado ✅", type: "success" });
       })
-      .catch(() =>
-        setSnackbar({ open: true, message: "Error guardando producto", type: "error" })
-      );
+      .catch(() => setSnackbar({ open: true, message: "Error guardando producto", type: "error" }));
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("¿Seguro que deseas eliminar este producto?")) {
-      fetch(`${API_URL}/${id}`, { method: "DELETE" })
-        .then(() => {
-          fetchProductos();
-          setSnackbar({ open: true, message: "Producto eliminado 🗑️", type: "info" });
-        })
-        .catch(() =>
-          setSnackbar({ open: true, message: "Error eliminando producto", type: "error" })
-        );
-    }
+  const openEdit = (p) => { setEdit(p); setEditOpen(true); };
+  const saveEdit = () => {
+    fetch(`${API_URL}/${edit.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nombre: edit.nombre, precio: edit.precio, imagenUrl: edit.imagenUrl })
+    })
+      .then(res => res.json())
+      .then(() => {
+        setEditOpen(false);
+        fetchProductos();
+        setSnackbar({ open: true, message: "Producto actualizado ✅", type: "success" });
+      })
+      .catch(() => setSnackbar({ open: true, message: "Error actualizando", type: "error" }));
   };
 
-  const handleEdit = (producto) => {
-    setForm(producto);
+  const confirmDelete = (id) => { setDelId(id); setDelOpen(true); };
+  const doDelete = () => {
+    fetch(`${API_URL}/${delId}`, { method: "DELETE" })
+      .then(() => {
+        setDelOpen(false);
+        fetchProductos();
+        setSnackbar({ open: true, message: "Producto eliminado 🗑️", type: "info" });
+      })
+      .catch(() => setSnackbar({ open: true, message: "Error eliminando", type: "error" }));
   };
 
   return (
-    <div>
-      <Typography variant="h4" align="center" color="primary" gutterBottom>
+    <Box>
+      <Typography variant="h4" align="center" color="primary" fontWeight={600} gutterBottom>
         Gestión de Productos
       </Typography>
 
-      {/* Formulario */}
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          gap: "10px",
-          justifyContent: "center",
-          flexWrap: "wrap",
-          marginBottom: "20px"
-        }}
-      >
+      {/* Formulario de ALTA */}
+      <Box component="form" onSubmit={handleCreate}
+           sx={{ display: "flex", gap: 2, flexWrap: "wrap", justifyContent: "center", mb: 3 }}>
         <TextField
-          label="Nombre"
-          name="nombre"
-          value={form.nombre}
-          onChange={handleChange}
-          required
+          label="Nombre" required value={form.nombre}
+          onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+          InputProps={{ startAdornment: <InputAdornment position="start"><ShoppingCartOutlinedIcon/></InputAdornment> }}
         />
         <TextField
-          type="number"
-          label="Precio"
-          name="precio"
-          value={form.precio}
-          onChange={handleChange}
-          required
+          type="number" label="Precio" required value={form.precio}
+          onChange={(e) => setForm({ ...form, precio: e.target.value })}
+          InputProps={{ startAdornment: <InputAdornment position="start"><AttachMoneyIcon/></InputAdornment> }}
         />
         <TextField
-          label="URL de imagen"
-          name="imagenUrl"
-          value={form.imagenUrl}
-          onChange={handleChange}
-          required
+          label="URL de imagen" required value={form.imagenUrl}
+          onChange={(e) => setForm({ ...form, imagenUrl: e.target.value })}
+          InputProps={{ startAdornment: <InputAdornment position="start"><ImageOutlinedIcon/></InputAdornment> }}
+          sx={{ minWidth: 320 }}
         />
-        <Button type="submit" variant="contained" color="primary">
-          {form.id ? "Actualizar" : "Agregar"}
-        </Button>
-      </form>
+        <Button type="submit" variant="contained" startIcon={<AddIcon />}>Agregar</Button>
+      </Box>
 
-      {/* Loader */}
+      {/* Loader / Error */}
       {loading && (
-        <div style={{ display: "flex", justifyContent: "center", margin: "20px" }}>
+        <Box sx={{ display: "flex", gap: 2, justifyContent: "center", my: 4, alignItems: "center" }}>
           <CircularProgress />
-        </div>
+          <Typography>Cargando productos…</Typography>
+        </Box>
       )}
-      {error && <Typography color="error">{error}</Typography>}
+      {error && <Typography color="error" align="center">{error}</Typography>}
 
-      {/* Lista */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-          gap: "20px"
-        }}
-      >
+      {/* Cards */}
+      <Grid container spacing={3}>
         {productos.map((p) => (
-  <Card
-    key={p.id}
-    sx={{
-      borderRadius: "16px",
-      boxShadow: 3,
-      transition: "transform 0.25s ease, box-shadow 0.25s ease",
-      "&:hover": {
-        transform: "translateY(-8px)",
-        boxShadow: 6
-      }
-    }}
-  >
-    <img
-      src={p.imagenUrl}
-      alt={p.nombre}
-      style={{ width: "100%", height: "160px", objectFit: "cover" }}
-    />
-    <CardContent>
-      <Typography variant="h6">{p.nombre}</Typography>
-      <Typography variant="body1" color="secondary">
-        ${p.precio}
-      </Typography>
-    </CardContent>
-    <CardActions sx={{ justifyContent: "center", gap: 1, paddingBottom: 1 }}>
-  <Button
-    variant="text"
-    color="primary"
-    startIcon={<EditIcon />}
-    onClick={() => handleEdit(p)}
-  >
-    Editar
-  </Button>
-  <Button
-    variant="text"
-    color="error"
-    startIcon={<DeleteIcon />}
-    onClick={() => handleDelete(p.id)}
-  >
-    Eliminar
-  </Button>
-</CardActions>
-  </Card>
-))}
-      </div>
+          <Grid item xs={12} sm={6} md={4} lg={3} key={p.id}>
+            <Fade in timeout={300}>
+              <Card
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  boxShadow: 3,
+                  transition: "transform .25s ease, box-shadow .25s ease",
+                  "&:hover": { transform: "translateY(-8px)", boxShadow: 6 }
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  height="160"
+                  image={p.imagenUrl}
+                  alt={p.nombre}
+                  sx={{ objectFit: "cover" }}
+                />
+                <CardContent sx={{ pb: 1 }}>
+                  <Typography variant="h6" gutterBottom>{p.nombre}</Typography>
+                  <Chip label={`$${p.precio}`} color="primary" variant="outlined" />
+                </CardContent>
+                <CardActions sx={{ mt: "auto", justifyContent: "center", gap: 1, pb: 2 }}>
+                  <Button size="small" variant="text" color="primary" startIcon={<EditIcon />} onClick={() => openEdit(p)}>
+                    Editar
+                  </Button>
+                  <Button size="small" variant="text" color="error" startIcon={<DeleteIcon />} onClick={() => confirmDelete(p.id)}>
+                    Eliminar
+                  </Button>
+                </CardActions>
+              </Card>
+            </Fade>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Modal Edición */}
+      <Dialog open={editOpen} onClose={() => setEditOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Editar producto</DialogTitle>
+        <DialogContent sx={{ pt: 2 }}>
+          <Box sx={{ display: "grid", gap: 2, mt: 1 }}>
+            <TextField
+              label="Nombre" value={edit.nombre}
+              onChange={(e) => setEdit({ ...edit, nombre: e.target.value })} autoFocus
+            />
+            <TextField
+              type="number" label="Precio" value={edit.precio}
+              onChange={(e) => setEdit({ ...edit, precio: e.target.value })}
+            />
+            <TextField
+              label="URL de imagen" value={edit.imagenUrl}
+              onChange={(e) => setEdit({ ...edit, imagenUrl: e.target.value })}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditOpen(false)}>Cancelar</Button>
+          <Button onClick={saveEdit} variant="contained" startIcon={<SaveIcon />}>Guardar</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog Borrado */}
+      <Dialog open={delOpen} onClose={() => setDelOpen(false)}>
+        <DialogTitle>¿Eliminar producto?</DialogTitle>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setDelOpen(false)}>Cancelar</Button>
+          <Button color="error" variant="contained" onClick={doDelete} startIcon={<DeleteIcon />}>
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Snackbar */}
       <Snackbar
@@ -212,8 +207,6 @@ function Productos() {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </div>
+    </Box>
   );
 }
-
-export default Productos;

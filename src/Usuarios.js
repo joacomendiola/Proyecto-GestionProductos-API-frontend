@@ -1,192 +1,184 @@
 import React, { useEffect, useState } from "react";
 import {
-  TextField,
-  Button,
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  CircularProgress,
-  Snackbar,
-  Alert
+  Box, Grid, TextField, Button, Card, CardContent, CardActions,
+  Typography, CircularProgress, Snackbar, Alert, Dialog, DialogTitle,
+  DialogContent, DialogActions, InputAdornment, Fade
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import SaveIcon from "@mui/icons-material/Save";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import PersonIcon from "@mui/icons-material/Person";
+import EmailIcon from "@mui/icons-material/Email";
 
-function Usuarios() {
-  const API_URL = "https://proyecto-gestionproductos-api.onrender.com/usuarios";
+const API_URL = "https://proyecto-gestionproductos-api.onrender.com/usuarios";
 
+export default function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", type: "success" });
+  const [error, setError] = useState(null);
 
-  const [form, setForm] = useState({
-    id: null,
-    nombre: "",
-    correo: ""
-  });
+  // Form ALTA
+  const [form, setForm] = useState({ nombre: "", correo: "" });
 
-  useEffect(() => {
-    fetchUsuarios();
-  }, []);
+  // Modal EDICIÓN
+  const [editOpen, setEditOpen] = useState(false);
+  const [edit, setEdit] = useState({ id: null, nombre: "", correo: "" });
+
+  // Dialog BORRADO
+  const [delOpen, setDelOpen] = useState(false);
+  const [delId, setDelId] = useState(null);
+
+  useEffect(() => { fetchUsuarios(); }, []);
 
   const fetchUsuarios = () => {
     setLoading(true);
     fetch(API_URL)
-      .then((res) => res.json())
-      .then((data) => {
-        setUsuarios(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Error cargando usuarios");
-        setLoading(false);
-      });
+      .then(res => res.json())
+      .then(data => { setUsuarios(data); setLoading(false); })
+      .catch(() => { setError("Error cargando usuarios"); setLoading(false); });
   };
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
+  const handleCreate = (e) => {
     e.preventDefault();
-    const metodo = form.id ? "PUT" : "POST";
-    const url = form.id ? `${API_URL}/${form.id}` : API_URL;
-
-    fetch(url, {
-      method: metodo,
+    fetch(API_URL, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        nombre: form.nombre,
-        correo: form.correo
-      })
+      body: JSON.stringify(form)
     })
-      .then((res) => res.json())
+      .then(res => res.json())
       .then(() => {
+        setForm({ nombre: "", correo: "" });
         fetchUsuarios();
-        setForm({ id: null, nombre: "", correo: "" });
-        setSnackbar({
-          open: true,
-          message: form.id ? "Usuario actualizado ✅" : "Usuario agregado ✅",
-          type: "success"
-        });
+        setSnackbar({ open: true, message: "Usuario agregado ✅", type: "success" });
       })
-      .catch(() =>
-        setSnackbar({ open: true, message: "Error guardando usuario", type: "error" })
-      );
+      .catch(() => setSnackbar({ open: true, message: "Error guardando usuario", type: "error" }));
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("¿Seguro que deseas eliminar este usuario?")) {
-      fetch(`${API_URL}/${id}`, { method: "DELETE" })
-        .then(() => {
-          fetchUsuarios();
-          setSnackbar({ open: true, message: "Usuario eliminado 🗑️", type: "info" });
-        })
-        .catch(() =>
-          setSnackbar({ open: true, message: "Error eliminando usuario", type: "error" })
-        );
-    }
+  const openEdit = (u) => { setEdit(u); setEditOpen(true); };
+  const saveEdit = () => {
+    fetch(`${API_URL}/${edit.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nombre: edit.nombre, correo: edit.correo })
+    })
+      .then(res => res.json())
+      .then(() => {
+        setEditOpen(false);
+        fetchUsuarios();
+        setSnackbar({ open: true, message: "Usuario actualizado ✅", type: "success" });
+      })
+      .catch(() => setSnackbar({ open: true, message: "Error actualizando", type: "error" }));
   };
 
-  const handleEdit = (usuario) => {
-    setForm(usuario);
+  const confirmDelete = (id) => { setDelId(id); setDelOpen(true); };
+  const doDelete = () => {
+    fetch(`${API_URL}/${delId}`, { method: "DELETE" })
+      .then(() => {
+        setDelOpen(false);
+        fetchUsuarios();
+        setSnackbar({ open: true, message: "Usuario eliminado 🗑️", type: "info" });
+      })
+      .catch(() => setSnackbar({ open: true, message: "Error eliminando", type: "error" }));
   };
 
   return (
-    <div>
-      <Typography variant="h4" align="center" color="primary" gutterBottom>
+    <Box>
+      <Typography variant="h4" align="center" color="primary" fontWeight={600} gutterBottom>
         Gestión de Usuarios
       </Typography>
 
-      {/* Formulario */}
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          gap: "10px",
-          justifyContent: "center",
-          flexWrap: "wrap",
-          marginBottom: "20px"
-        }}
-      >
+      {/* Form ALTA */}
+      <Box component="form" onSubmit={handleCreate}
+           sx={{ display: "flex", gap: 2, flexWrap: "wrap", justifyContent: "center", mb: 3 }}>
         <TextField
-          label="Nombre"
-          name="nombre"
-          value={form.nombre}
-          onChange={handleChange}
-          required
+          label="Nombre" required value={form.nombre}
+          onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+          InputProps={{ startAdornment: <InputAdornment position="start"><PersonIcon/></InputAdornment> }}
         />
         <TextField
-          type="email"
-          label="Correo"
-          name="correo"
-          value={form.correo}
-          onChange={handleChange}
-          required
+          type="email" label="Correo" required value={form.correo}
+          onChange={(e) => setForm({ ...form, correo: e.target.value })}
+          InputProps={{ startAdornment: <InputAdornment position="start"><EmailIcon/></InputAdornment> }}
+          sx={{ minWidth: 320 }}
         />
-        <Button type="submit" variant="contained" color="primary">
-          {form.id ? "Actualizar" : "Agregar"}
-        </Button>
-      </form>
+        <Button type="submit" variant="contained" startIcon={<AddIcon />}>Agregar</Button>
+      </Box>
 
-      {/* Loader */}
+      {/* Loader / Error */}
       {loading && (
-        <div style={{ display: "flex", justifyContent: "center", margin: "20px" }}>
+        <Box sx={{ display: "flex", gap: 2, justifyContent: "center", my: 4, alignItems: "center" }}>
           <CircularProgress />
-        </div>
+          <Typography>Cargando usuarios…</Typography>
+        </Box>
       )}
-      {error && <Typography color="error">{error}</Typography>}
+      {error && <Typography color="error" align="center">{error}</Typography>}
 
-      {/* Lista de usuarios */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-          gap: "20px"
-        }}
-      >
+      {/* Cards */}
+      <Grid container spacing={3}>
         {usuarios.map((u) => (
-          <Card
-            key={u.id}
-            sx={{
-              borderRadius: "16px",
-              boxShadow: 3,
-              transition: "transform 0.25s ease, box-shadow 0.25s ease",
-              "&:hover": {
-                transform: "translateY(-8px)",
-                boxShadow: 6
-              }
-            }}
-          >
-            <CardContent>
-              <Typography variant="h6">{u.nombre}</Typography>
-              <Typography variant="body1" color="secondary">
-                {u.correo}
-              </Typography>
-            </CardContent>
-            <CardActions sx={{ justifyContent: "center" }}>
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<EditIcon />}
-                onClick={() => handleEdit(u)}
+          <Grid item xs={12} sm={6} md={4} lg={3} key={u.id}>
+            <Fade in timeout={300}>
+              <Card
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  boxShadow: 3,
+                  transition: "transform .25s ease, box-shadow .25s ease",
+                  "&:hover": { transform: "translateY(-8px)", boxShadow: 6 }
+                }}
               >
-                Editar
-              </Button>
-              <Button
-                variant="outlined"
-                color="error"
-                startIcon={<DeleteIcon />}
-                onClick={() => handleDelete(u.id)}
-              >
-                Eliminar
-              </Button>
-            </CardActions>
-          </Card>
+                <CardContent sx={{ pb: 1 }}>
+                  <Typography variant="h6" gutterBottom>{u.nombre}</Typography>
+                  <Typography variant="body1" color="secondary">{u.correo}</Typography>
+                </CardContent>
+                <CardActions sx={{ mt: "auto", justifyContent: "center", gap: 1, pb: 2 }}>
+                  <Button size="small" variant="text" color="primary" startIcon={<EditIcon />} onClick={() => openEdit(u)}>
+                    Editar
+                  </Button>
+                  <Button size="small" variant="text" color="error" startIcon={<DeleteIcon />} onClick={() => confirmDelete(u.id)}>
+                    Eliminar
+                  </Button>
+                </CardActions>
+              </Card>
+            </Fade>
+          </Grid>
         ))}
-      </div>
+      </Grid>
+
+      {/* Modal Edición */}
+      <Dialog open={editOpen} onClose={() => setEditOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Editar usuario</DialogTitle>
+        <DialogContent sx={{ pt: 2 }}>
+          <Box sx={{ display: "grid", gap: 2, mt: 1 }}>
+            <TextField
+              label="Nombre" value={edit.nombre}
+              onChange={(e) => setEdit({ ...edit, nombre: e.target.value })} autoFocus
+            />
+            <TextField
+              type="email" label="Correo" value={edit.correo}
+              onChange={(e) => setEdit({ ...edit, correo: e.target.value })}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditOpen(false)}>Cancelar</Button>
+          <Button onClick={saveEdit} variant="contained" startIcon={<SaveIcon />}>Guardar</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog Borrado */}
+      <Dialog open={delOpen} onClose={() => setDelOpen(false)}>
+        <DialogTitle>¿Eliminar usuario?</DialogTitle>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setDelOpen(false)}>Cancelar</Button>
+          <Button color="error" variant="contained" onClick={doDelete} startIcon={<DeleteIcon />}>
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Snackbar */}
       <Snackbar
@@ -198,8 +190,6 @@ function Usuarios() {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </div>
+    </Box>
   );
 }
-
-export default Usuarios;
