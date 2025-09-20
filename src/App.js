@@ -17,7 +17,16 @@ function App() {
       <div className="grid">
         {productos.map((p) => (
           <div key={p.id} className="card">
-            <div className="imagen-placeholder"></div>
+            {/* Mostrar imagen si existe */}
+            {p.imagenUrl ? (
+              <img
+                src={p.imagenUrl}
+                alt={p.nombre}
+                className="imagen-producto"
+              />
+            ) : (
+              <div className="imagen-placeholder"></div>
+            )}
             <h2 className="nombre">{p.nombre}</h2>
             <p className="precio">${p.precio}</p>
           </div>
