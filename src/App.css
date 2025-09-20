@@ -1,62 +1,78 @@
 body {
-  font-family: Arial, sans-serif;
-  background: #f3e8ff; /* violeta claro */
+  font-family: 'Poppins', sans-serif;
+  background-color: #f3e8ff; /* violeta pastel */
   margin: 0;
   padding: 0;
 }
 
 .container {
-  max-width: 900px;
-  margin: 30px auto;
-  padding: 20px;
-  background: #ffffff; /* caja blanca */
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
 }
 
-.title {
+.titulo {
   text-align: center;
+  color: #5b21b6; /* violeta fuerte */
+  margin-bottom: 30px;
   font-size: 2rem;
-  margin-bottom: 20px;
-  color: #6d28d9; /* violeta fuerte */
+  font-weight: 600;
 }
 
-.loading,
-.empty {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #555;
-}
-
-.card-grid {
+.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 25px;
 }
 
 .card {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 15px;
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
   text-align: center;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-  background: #ede9fe; /* lavanda suave */
+  box-shadow: 0px 12px 25px rgba(0, 0, 0, 0.15);
 }
 
-.card h2 {
-  margin: 10px 0;
-  font-size: 1.4rem;
-  color: #6d28d9; /* mismo tono que el título */
+.imagen-placeholder {
+  width: 100%;
+  height: 150px;
+  background: linear-gradient(135deg, #e9d5ff, #d8b4fe);
+  border-radius: 12px;
+  margin-bottom: 15px;
 }
 
-.card .price {
+.nombre {
   font-size: 1.2rem;
+  font-weight: 500;
+  margin: 10px 0;
+  color: #333;
+}
+
+.precio {
+  font-size: 1.3rem;
+  color: #9333ea;
   font-weight: bold;
-  color: #9333ea; /* violeta brillante */
+  margin-bottom: 15px;
+}
+
+.btn {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.btn:hover {
+  background: #5b21b6;
 }

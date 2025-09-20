@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./App.css";
 
 function App() {
   const [productos, setProductos] = useState([]);
@@ -11,13 +12,18 @@ function App() {
   }, []);
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Lista de Productos</h1>
-      <ul>
+    <div className="container">
+      <h1 className="titulo">Lista de Productos</h1>
+      <div className="grid">
         {productos.map((p) => (
-          <li key={p.id}>{p.nombre} - ${p.precio}</li>
+          <div key={p.id} className="card">
+            <div className="imagen-placeholder"></div>
+            <h2 className="nombre">{p.nombre}</h2>
+            <p className="precio">${p.precio}</p>
+            <button className="btn">Agregar</button>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
