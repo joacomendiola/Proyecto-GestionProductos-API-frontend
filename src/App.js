@@ -20,7 +20,6 @@ function App() {
             <div className="imagen-placeholder"></div>
             <h2 className="nombre">{p.nombre}</h2>
             <p className="precio">${p.precio}</p>
-            <button className="btn">Agregar</button>
           </div>
         ))}
       </div>

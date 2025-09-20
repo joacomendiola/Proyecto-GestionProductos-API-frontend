@@ -1,10 +1,3 @@
-body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #f3e8ff; /* violeta pastel */
-  margin: 0;
-  padding: 0;
-}
-
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -14,20 +7,20 @@ body {
 .titulo {
   text-align: center;
   color: #5b21b6; /* violeta fuerte */
-  margin-bottom: 30px;
-  font-size: 2rem;
+  margin-bottom: 40px;
+  font-size: 2.2rem;
   font-weight: 600;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 30px;
 }
 
 .card {
   background: white;
-  border-radius: 15px;
+  border-radius: 16px;
   padding: 20px;
   text-align: center;
   box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
@@ -35,44 +28,27 @@ body {
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0px 12px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px);
+  box-shadow: 0px 14px 28px rgba(0, 0, 0, 0.15);
 }
 
 .imagen-placeholder {
   width: 100%;
-  height: 150px;
+  height: 160px;
   background: linear-gradient(135deg, #e9d5ff, #d8b4fe);
   border-radius: 12px;
-  margin-bottom: 15px;
+  margin-bottom: 18px;
 }
 
 .nombre {
   font-size: 1.2rem;
   font-weight: 500;
-  margin: 10px 0;
-  color: #333;
+  margin: 8px 0;
 }
 
 .precio {
-  font-size: 1.3rem;
-  color: #9333ea;
+  font-size: 1.4rem;
+  color: #9333ea; /* violeta intenso */
   font-weight: bold;
-  margin-bottom: 15px;
-}
-
-.btn {
-  background: #7c3aed;
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: background 0.2s ease;
-}
-
-.btn:hover {
-  background: #5b21b6;
+  margin-bottom: 12px;
 }

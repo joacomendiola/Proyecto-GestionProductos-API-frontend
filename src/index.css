@@ -1,10 +1,16 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Poppins', sans-serif;
   background-color: #f3e8ff; /* violeta pastel */
-  margin: 0;
-  padding: 0;
+  color: #333;
+  line-height: 1.5;
 }
-
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
