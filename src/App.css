@@ -12,6 +12,33 @@
   font-weight: 600;
 }
 
+.formulario {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.formulario input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  flex: 1;
+}
+
+.formulario button {
+  background-color: #5b21b6;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.formulario button:hover {
+  background-color: #7c3aed;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -25,6 +52,7 @@
   text-align: center;
   box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
 }
 
 .card:hover {
@@ -32,12 +60,20 @@
   box-shadow: 0px 14px 28px rgba(0, 0, 0, 0.15);
 }
 
+.imagen-producto {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
 .imagen-placeholder {
   width: 100%;
-  height: 160px;
+  height: 180px;
   background: linear-gradient(135deg, #e9d5ff, #d8b4fe);
-  border-radius: 12px;
-  margin-bottom: 18px;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
 .nombre {
@@ -52,18 +88,49 @@
   font-weight: bold;
   margin-bottom: 12px;
 }
-.imagen-producto {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;   /* Ajusta la imagen sin deformar */
-  border-radius: 8px;
-  margin-bottom: 10px;
+
+.acciones {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
 }
 
-.imagen-placeholder {
-  width: 100%;
-  height: 180px;
-  background: #e0e0e0;
+button.editar {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 6px 12px;
   border-radius: 8px;
-  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+button.editar:hover {
+  background-color: #1d4ed8;
+}
+
+button.eliminar {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button.eliminar:hover {
+  background-color: #b91c1c;
+}
+
+.numero {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  font-weight: bold;
+  color: #5b21b6;
+}
+
+.error {
+  color: red;
+  text-align: center;
 }
