@@ -1,5 +1,17 @@
 import React, { useEffect, useState } from "react";
-import "./App.css";
+import {
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  CircularProgress,
+  Snackbar,
+  Alert
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function Usuarios() {
   const API_URL = "https://proyecto-gestionproductos-api.onrender.com/usuarios";
@@ -7,6 +19,7 @@ function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", type: "success" });
 
   const [form, setForm] = useState({
     id: null,
@@ -53,15 +66,27 @@ function Usuarios() {
       .then(() => {
         fetchUsuarios();
         setForm({ id: null, nombre: "", correo: "" });
+        setSnackbar({
+          open: true,
+          message: form.id ? "Usuario actualizado ✅" : "Usuario agregado ✅",
+          type: "success"
+        });
       })
-      .catch(() => setError("Error guardando usuario"));
+      .catch(() =>
+        setSnackbar({ open: true, message: "Error guardando usuario", type: "error" })
+      );
   };
 
   const handleDelete = (id) => {
     if (window.confirm("¿Seguro que deseas eliminar este usuario?")) {
       fetch(`${API_URL}/${id}`, { method: "DELETE" })
-        .then(() => fetchUsuarios())
-        .catch(() => setError("Error eliminando usuario"));
+        .then(() => {
+          fetchUsuarios();
+          setSnackbar({ open: true, message: "Usuario eliminado 🗑️", type: "info" });
+        })
+        .catch(() =>
+          setSnackbar({ open: true, message: "Error eliminando usuario", type: "error" })
+        );
     }
   };
 
@@ -70,51 +95,94 @@ function Usuarios() {
   };
 
   return (
-    <div className="container">
-      <h1 className="titulo">Gestión de Usuarios</h1>
+    <div>
+      <Typography variant="h4" align="center" color="primary" gutterBottom>
+        Gestión de Usuarios
+      </Typography>
 
-      <form onSubmit={handleSubmit} className="formulario">
-        <input
-          type="text"
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: "flex",
+          gap: "10px",
+          justifyContent: "center",
+          flexWrap: "wrap",
+          marginBottom: "20px"
+        }}
+      >
+        <TextField
+          label="Nombre"
           name="nombre"
-          placeholder="Nombre"
           value={form.nombre}
           onChange={handleChange}
           required
         />
-        <input
+        <TextField
           type="email"
+          label="Correo"
           name="correo"
-          placeholder="Correo"
           value={form.correo}
           onChange={handleChange}
           required
         />
-        <button type="submit">
-          {form.id ? "Actualizar Usuario" : "Agregar Usuario"}
-        </button>
+        <Button type="submit" variant="contained" color="primary">
+          {form.id ? "Actualizar" : "Agregar"}
+        </Button>
       </form>
 
-      {loading && <p>Cargando usuarios...</p>}
-      {error && <p className="error">{error}</p>}
+      {loading && (
+        <div style={{ display: "flex", justifyContent: "center", margin: "20px" }}>
+          <CircularProgress />
+        </div>
+      )}
+      {error && <Typography color="error">{error}</Typography>}
 
-      <div className="grid">
-        {usuarios.map((u, i) => (
-          <div key={u.id} className="card">
-            <h2 className="nombre">{u.nombre}</h2>
-            <p className="precio">{u.correo}</p>
-            <div className="acciones">
-              <button className="editar" onClick={() => handleEdit(u)}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+          gap: "20px"
+        }}
+      >
+        {usuarios.map((u) => (
+          <Card key={u.id} sx={{ borderRadius: "16px", boxShadow: 3 }}>
+            <CardContent>
+              <Typography variant="h6">{u.nombre}</Typography>
+              <Typography variant="body1" color="secondary">
+                {u.correo}
+              </Typography>
+            </CardContent>
+            <CardActions sx={{ justifyContent: "center" }}>
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<EditIcon />}
+                onClick={() => handleEdit(u)}
+              >
                 Editar
-              </button>
-              <button className="eliminar" onClick={() => handleDelete(u.id)}>
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={() => handleDelete(u.id)}
+              >
                 Eliminar
-              </button>
-            </div>
-            <span className="numero">{i + 1}</span>
-          </div>
+              </Button>
+            </CardActions>
+          </Card>
         ))}
       </div>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert severity={snackbar.type} onClose={() => setSnackbar({ ...snackbar, open: false })}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

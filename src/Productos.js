@@ -1,5 +1,17 @@
 import React, { useEffect, useState } from "react";
-import "./App.css";
+import {
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  CircularProgress,
+  Snackbar,
+  Alert
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function Productos() {
   const API_URL = "https://proyecto-gestionproductos-api.onrender.com/productos";
@@ -7,6 +19,7 @@ function Productos() {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", type: "success" });
 
   const [form, setForm] = useState({
     id: null,
@@ -55,15 +68,27 @@ function Productos() {
       .then(() => {
         fetchProductos();
         setForm({ id: null, nombre: "", precio: "", imagenUrl: "" });
+        setSnackbar({
+          open: true,
+          message: form.id ? "Producto actualizado ✅" : "Producto agregado ✅",
+          type: "success"
+        });
       })
-      .catch(() => setError("Error guardando producto"));
+      .catch(() =>
+        setSnackbar({ open: true, message: "Error guardando producto", type: "error" })
+      );
   };
 
   const handleDelete = (id) => {
     if (window.confirm("¿Seguro que deseas eliminar este producto?")) {
       fetch(`${API_URL}/${id}`, { method: "DELETE" })
-        .then(() => fetchProductos())
-        .catch(() => setError("Error eliminando producto"));
+        .then(() => {
+          fetchProductos();
+          setSnackbar({ open: true, message: "Producto eliminado 🗑️", type: "info" });
+        })
+        .catch(() =>
+          setSnackbar({ open: true, message: "Error eliminando producto", type: "error" })
+        );
     }
   };
 
@@ -72,65 +97,110 @@ function Productos() {
   };
 
   return (
-    <div className="container">
-      <h1 className="titulo">Gestión de Productos</h1>
+    <div>
+      <Typography variant="h4" align="center" color="primary" gutterBottom>
+        Gestión de Productos
+      </Typography>
 
-      <form onSubmit={handleSubmit} className="formulario">
-        <input
-          type="text"
+      {/* Formulario */}
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: "flex",
+          gap: "10px",
+          justifyContent: "center",
+          flexWrap: "wrap",
+          marginBottom: "20px"
+        }}
+      >
+        <TextField
+          label="Nombre"
           name="nombre"
-          placeholder="Nombre"
           value={form.nombre}
           onChange={handleChange}
           required
         />
-        <input
+        <TextField
           type="number"
-          step="0.01"
+          label="Precio"
           name="precio"
-          placeholder="Precio"
           value={form.precio}
           onChange={handleChange}
           required
         />
-        <input
-          type="text"
+        <TextField
+          label="URL de imagen"
           name="imagenUrl"
-          placeholder="URL de la imagen"
           value={form.imagenUrl}
           onChange={handleChange}
           required
         />
-        <button type="submit">
-          {form.id ? "Actualizar Producto" : "Agregar Producto"}
-        </button>
+        <Button type="submit" variant="contained" color="primary">
+          {form.id ? "Actualizar" : "Agregar"}
+        </Button>
       </form>
 
-      {loading && <p>Cargando productos...</p>}
-      {error && <p className="error">{error}</p>}
+      {/* Loader */}
+      {loading && (
+        <div style={{ display: "flex", justifyContent: "center", margin: "20px" }}>
+          <CircularProgress />
+        </div>
+      )}
+      {error && <Typography color="error">{error}</Typography>}
 
-      <div className="grid">
-        {productos.map((p, i) => (
-          <div key={p.id} className="card">
-            {p.imagenUrl ? (
-              <img src={p.imagenUrl} alt={p.nombre} className="imagen-producto" />
-            ) : (
-              <div className="imagen-placeholder"></div>
-            )}
-            <h2 className="nombre">{p.nombre}</h2>
-            <p className="precio">${p.precio}</p>
-            <div className="acciones">
-              <button className="editar" onClick={() => handleEdit(p)}>
+      {/* Lista */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+          gap: "20px"
+        }}
+      >
+        {productos.map((p) => (
+          <Card key={p.id} sx={{ borderRadius: "16px", boxShadow: 3 }}>
+            <img
+              src={p.imagenUrl}
+              alt={p.nombre}
+              style={{ width: "100%", height: "160px", objectFit: "cover" }}
+            />
+            <CardContent>
+              <Typography variant="h6">{p.nombre}</Typography>
+              <Typography variant="body1" color="secondary">
+                ${p.precio}
+              </Typography>
+            </CardContent>
+            <CardActions sx={{ justifyContent: "center" }}>
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<EditIcon />}
+                onClick={() => handleEdit(p)}
+              >
                 Editar
-              </button>
-              <button className="eliminar" onClick={() => handleDelete(p.id)}>
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={() => handleDelete(p.id)}
+              >
                 Eliminar
-              </button>
-            </div>
-            <span className="numero">{i + 1}</span>
-          </div>
+              </Button>
+            </CardActions>
+          </Card>
         ))}
       </div>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert severity={snackbar.type} onClose={() => setSnackbar({ ...snackbar, open: false })}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

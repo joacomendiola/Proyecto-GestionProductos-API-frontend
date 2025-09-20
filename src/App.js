@@ -2,25 +2,29 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Productos from "./Productos";
 import Usuarios from "./Usuarios";
-import "./App.css";
+import { AppBar, Toolbar, Button, Container } from "@mui/material";
 
 function App() {
   return (
     <Router>
-      <div className="container">
-        {/* Menú de navegación */}
-        <nav className="menu">
-          <Link to="/productos">Productos</Link>
-          <Link to="/usuarios">Usuarios</Link>
-        </nav>
+      <AppBar position="static" color="primary">
+        <Toolbar style={{ display: "flex", gap: "20px" }}>
+          <Button color="inherit" component={Link} to="/productos">
+            Productos
+          </Button>
+          <Button color="inherit" component={Link} to="/usuarios">
+            Usuarios
+          </Button>
+        </Toolbar>
+      </AppBar>
 
-        {/* Rutas */}
+      <Container style={{ marginTop: "30px" }}>
         <Routes>
           <Route path="/" element={<Productos />} />
           <Route path="/productos" element={<Productos />} />
           <Route path="/usuarios" element={<Usuarios />} />
         </Routes>
-      </div>
+      </Container>
     </Router>
   );
 }
