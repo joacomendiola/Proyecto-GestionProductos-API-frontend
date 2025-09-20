@@ -100,6 +100,7 @@ function Usuarios() {
         Gestión de Usuarios
       </Typography>
 
+      {/* Formulario */}
       <form
         onSubmit={handleSubmit}
         style={{
@@ -130,6 +131,7 @@ function Usuarios() {
         </Button>
       </form>
 
+      {/* Loader */}
       {loading && (
         <div style={{ display: "flex", justifyContent: "center", margin: "20px" }}>
           <CircularProgress />
@@ -137,6 +139,7 @@ function Usuarios() {
       )}
       {error && <Typography color="error">{error}</Typography>}
 
+      {/* Lista de usuarios */}
       <div
         style={{
           display: "grid",
@@ -145,7 +148,18 @@ function Usuarios() {
         }}
       >
         {usuarios.map((u) => (
-          <Card key={u.id} sx={{ borderRadius: "16px", boxShadow: 3 }}>
+          <Card
+            key={u.id}
+            sx={{
+              borderRadius: "16px",
+              boxShadow: 3,
+              transition: "transform 0.25s ease, box-shadow 0.25s ease",
+              "&:hover": {
+                transform: "translateY(-8px)",
+                boxShadow: 6
+              }
+            }}
+          >
             <CardContent>
               <Typography variant="h6">{u.nombre}</Typography>
               <Typography variant="body1" color="secondary">
@@ -174,6 +188,7 @@ function Usuarios() {
         ))}
       </div>
 
+      {/* Snackbar */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}

@@ -157,38 +157,34 @@ function Productos() {
         }}
       >
         {productos.map((p) => (
-          <Card key={p.id} sx={{ borderRadius: "16px", boxShadow: 3 }}>
-            <img
-              src={p.imagenUrl}
-              alt={p.nombre}
-              style={{ width: "100%", height: "160px", objectFit: "cover" }}
-            />
-            <CardContent>
-              <Typography variant="h6">{p.nombre}</Typography>
-              <Typography variant="body1" color="secondary">
-                ${p.precio}
-              </Typography>
-            </CardContent>
-            <CardActions sx={{ justifyContent: "center" }}>
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<EditIcon />}
-                onClick={() => handleEdit(p)}
-              >
-                Editar
-              </Button>
-              <Button
-                variant="outlined"
-                color="error"
-                startIcon={<DeleteIcon />}
-                onClick={() => handleDelete(p.id)}
-              >
-                Eliminar
-              </Button>
-            </CardActions>
-          </Card>
-        ))}
+  <Card
+    key={p.id}
+    sx={{
+      borderRadius: "16px",
+      boxShadow: 3,
+      transition: "transform 0.25s ease, box-shadow 0.25s ease",
+      "&:hover": {
+        transform: "translateY(-8px)",
+        boxShadow: 6
+      }
+    }}
+  >
+    <img
+      src={p.imagenUrl}
+      alt={p.nombre}
+      style={{ width: "100%", height: "160px", objectFit: "cover" }}
+    />
+    <CardContent>
+      <Typography variant="h6">{p.nombre}</Typography>
+      <Typography variant="body1" color="secondary">
+        ${p.precio}
+      </Typography>
+    </CardContent>
+    <CardActions sx={{ justifyContent: "center" }}>
+      {/* botones editar / eliminar */}
+    </CardActions>
+  </Card>
+))}
       </div>
 
       {/* Snackbar */}
